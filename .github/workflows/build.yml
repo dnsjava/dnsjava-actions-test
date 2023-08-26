@@ -1,4 +1,4 @@
-name: main-build
+name: Build
 
 on:
   push:
@@ -12,7 +12,8 @@ permissions:
   checks: write
 
 jobs:
-  test:
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

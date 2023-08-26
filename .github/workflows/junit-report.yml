@@ -1,16 +1,19 @@
-name: report
+name: JUnit reporting
+
 on:
   workflow_run:
     workflows:
-      - 'main-build'
-      - 'pr-build'
-    types: [ completed ]
+      - 'Build'
+      - 'Build PR'
+    types:
+      - completed
 
 permissions:
   checks: write
 
 jobs:
-  checks:
+  junit-report:
+    name: Process JUnit Reports
     runs-on: ubuntu-latest
     steps:
       - name: Download Test Report
@@ -26,3 +29,5 @@ jobs:
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           report_paths: 'target/surefire-reports/TEST-*.xml'
+          require_tests: true
+          check_retries: true
