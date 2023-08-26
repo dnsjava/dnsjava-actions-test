@@ -20,8 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        java: [ '17' ]
+        os: [ ubuntu-latest ]
+        java: [ '11', '17' ]
         arch: [ 'x64' ]
 #        include:
 #          - os: windows-latest
@@ -80,11 +80,11 @@ jobs:
           check_name=""
           for file in target/surefire-reports-*
           do
-            report_paths="${file}\n${report_paths}/TEST-*.xml"
-            check_name="${file##surefire-reports-}\n${check_name}"
+            report_paths="${file}/TEST-*.xml"$'\n'"${report_paths}"
+            check_name="${file##target/surefire-reports-}"$'\n'"${check_name}"
           done
-          echo "report_paths=${report_paths%\\n}" >> $GITHUB_OUTPUT
-          echo "check_name=${check_name%\\n}" >> $GITHUB_OUTPUT
+          echo "report_paths=<<EOF"$'\n'"${report_paths}EOF" >> $GITHUB_OUTPUT
+          echo "check_name=<<EOF"$'\n'"${check_name}EOF" >> $GITHUB_OUTPUT
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
@@ -117,7 +117,4 @@ jobs:
           fetch-depth: 0
 
       - name: Merge JaCoCo and run SonarQube
-        run: |
-          mkdir -p target/coverage-reports
-          mv coverage-report-*/*.exec target/
-          mvn -B jacoco:merge org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B jacoco:merge org.sonarsource.scanner.maven:sonar-maven-plugin:sonar

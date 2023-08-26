@@ -200,7 +200,7 @@
                         <configuration>
                             <fileSets>
                                 <fileSet>
-                                    <directory>${project.build.directory}/coverage-reports</directory>
+                                    <directory>${project.build.directory}</directory>
                                     <includes>
                                         <include>*.exec</include>
                                     </includes>
