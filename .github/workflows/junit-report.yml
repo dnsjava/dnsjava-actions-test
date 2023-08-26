@@ -3,7 +3,6 @@ name: JUnit reporting
 on:
   workflow_run:
     workflows:
-      - 'Build'
       - 'Build PR'
     types:
       - completed
