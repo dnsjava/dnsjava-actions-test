@@ -117,4 +117,4 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Merge JaCoCo and run SonarQube
-        run: mvn -B jacoco:merge org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B jacoco:merge@merge-results org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
