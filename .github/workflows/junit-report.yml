@@ -43,4 +43,5 @@ jobs:
           require_tests: true
           check_retries: true
           detailed_summary: true
-          job_name: "Java ${{ matrix.java }}/${{ matrix.arch }}/${{ matrix.os }}"
+          job_name: 'Java ${{ matrix.java }}/${{ matrix.arch }}/${{ matrix.os }}'
+          check_name: 'Java ${{ matrix.java }}/${{ matrix.arch }}/${{ matrix.os }}'
