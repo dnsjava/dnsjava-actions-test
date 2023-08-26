@@ -16,10 +16,18 @@ jobs:
     name: Process JUnit Reports
     runs-on: ubuntu-latest
     steps:
-      - name: Download Test Report
+      - name: Download Windows Test Report
         uses: dawidd6/action-download-artifact@v2
         with:
-          name: junit-test-results
+          name: junit-test-results-windows-latest
+          workflow: ${{ github.event.workflow.id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          path: 'target/surefire-reports'
+
+      - name: Download Ubuntu Test Report
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: junit-test-results-ubuntu-latest
           workflow: ${{ github.event.workflow.id }}
           run_id: ${{ github.event.workflow_run.id }}
           path: 'target/surefire-reports'
@@ -31,3 +39,4 @@ jobs:
           report_paths: 'target/surefire-reports/TEST-*.xml'
           require_tests: true
           check_retries: true
+          detailed_summary: true

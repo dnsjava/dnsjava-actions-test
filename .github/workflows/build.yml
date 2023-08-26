@@ -11,10 +11,24 @@ on:
 permissions:
   checks: write
 
+env:
+  BUILD_JAVA_VERSION: '17'
+
 jobs:
   build:
-    name: Build and Test
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        java: [ '17' ]
+        arch: [ 'x64' ]
+        include:
+          - os: windows-latest
+            java: '17'
+            arch: x86
+
+    name: Java ${{ matrix.java }}/${{ matrix.arch }}/${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,11 +36,11 @@ jobs:
           # for Sonar
           fetch-depth: 0
 
-      - name: Set up JDK
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
-          java-version: 17
-          architecture: x64
+          java-version: ${{ matrix.java }}
+          architecture: ${{ matrix.arch }}
           distribution: temurin
           cache: maven
 
@@ -37,7 +51,12 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      - name: Build with Maven
+        if: ${{ !(matrix.arch == 'x64' && matrix.os == 'ubuntu-latest' && matrix.java == env.BUILD_JAVA_VERSION) }}
+        run: mvn verify -B -"Dgpg.skip"
+
       - name: Build with Maven and run Sonar
+        if: ${{ matrix.arch == 'x64' && matrix.os == 'ubuntu-latest' && matrix.java == env.BUILD_JAVA_VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -47,6 +66,6 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always() # always run even if the previous step fails
         with:
-          name: junit-test-results
+          name: junit-test-results-${{ matrix.os }}
           path: 'target/surefire-reports/TEST-*.xml'
           retention-days: 1
