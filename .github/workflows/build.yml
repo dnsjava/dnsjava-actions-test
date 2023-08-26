@@ -49,6 +49,13 @@ jobs:
           mv surefire-reports surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
           mv jacoco.exec jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
 
+      - name: Upload classes
+        uses: actions/upload-artifact@v3
+        if: matrix.java == env.BUILD_JAVA_VERSION && matrix.arch == 'x64' && matrix.os == 'ubuntu-latest'
+        with:
+          name: classes
+          path: target/*classes
+
       - name: Upload Reports
         uses: actions/upload-artifact@v3
         if: always() # always run even if the previous step fails
@@ -64,10 +71,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Get Artifact
+      - name: Get reports artifact
         uses: actions/download-artifact@v3
         with:
           name: reports
+          path: target
+
+      - name: Get classes artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: classes
           path: target
 
       - name: Display structure of downloaded files
