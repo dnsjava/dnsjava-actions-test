@@ -193,7 +193,7 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>merge-results</id>
+                        <id>default-cli</id>
                         <goals>
                             <goal>merge</goal>
                         </goals>
