@@ -27,9 +27,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:https://github.com/dnsjava/dnsjava</connection>
-        <developerConnection>scm:git:https://github.com/dnsjava/dnsjava</developerConnection>
-        <url>https://github.com/dnsjava/dnsjava</url>
+        <connection>scm:git:https://github.com/dnsjava/dnsjava-actions-test</connection>
+        <developerConnection>scm:git:https://github.com/dnsjava/dnsjava-actions-test</developerConnection>
+        <url>https://github.com/dnsjava/dnsjava-actions-test</url>
         <tag>HEAD</tag>
     </scm>
     <developers>
@@ -55,7 +55,7 @@
         <bouncycastle.version>1.76</bouncycastle.version>
         <vertx.version>4.4.4</vertx.version>
 
-        <sonar.projectKey>dnsjava_dnsjava</sonar.projectKey>
+        <sonar.projectKey>dnsjava_dnsjava-actions-test</sonar.projectKey>
         <sonar.organization>dnsjava</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.java.source>${target.jdk}</sonar.java.source>
