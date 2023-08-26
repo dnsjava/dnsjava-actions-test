@@ -34,3 +34,9 @@ jobs:
         with:
           name: pr_number
           path: pr_number.txt
+
+      - name: Archive JaCoCo
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco
+          path: target/jacoco.exec

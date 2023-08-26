@@ -49,6 +49,14 @@ jobs:
         run: |
           rm pr-content/pom.xml
 
+      - name: Download PR number artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{ github.event.workflow_run.name }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: jacoco
+          path: pr-content
+
       - name: SonarCloud Scan (Pull Request)
         uses: sonarsource/sonarqube-scan-action@master
         env:
