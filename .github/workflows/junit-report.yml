@@ -29,7 +29,14 @@ jobs:
         uses: mikepenz/action-junit-report@v3
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
-          report_paths: 'target/surefire-reports/**/TEST-*.xml'
+          report_paths: |
+            target/surefire-reports/junit-test-results-17-x64-ubuntu-latest/TEST-*.xml
+            target/surefire-reports/junit-test-results-17-x64-windows-latest/TEST-*.xml
+            target/surefire-reports/junit-test-results-17-x86-windows-latest/TEST-*.xml
+          check_name: |
+            17-x64-ubuntu-latest
+            17-x64-windows-latest
+            17-x86-windows-latest
           require_tests: true
           check_retries: true
           detailed_summary: true
