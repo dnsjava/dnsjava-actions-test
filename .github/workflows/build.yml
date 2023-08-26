@@ -29,6 +29,13 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       - name: Build with Maven and run Sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
