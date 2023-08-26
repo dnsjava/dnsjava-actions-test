@@ -45,8 +45,9 @@ jobs:
       - name: Build with Maven
         run: |
           mvn verify -B -"Dgpg.skip" jacoco:report
-          mv target/surefire-reports target/surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
-          cp target/jacoco.exec target/jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
+          cd target
+          mv surefire-reports surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
+          mv jacoco.exec jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
 
       - name: Upload Reports
         uses: actions/upload-artifact@v3
@@ -54,8 +55,8 @@ jobs:
         with:
           name: reports
           path: |
-            'target/surefire-reports-*/TEST-*.xml'
-            'target/jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec'
+            target/surefire-reports-*/TEST-*.xml
+            target/jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
           retention-days: 1
 
   analyze:
