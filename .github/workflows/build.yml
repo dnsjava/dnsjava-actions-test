@@ -81,7 +81,7 @@ jobs:
           for file in target/surefire-reports-*
           do
             report_paths="${file}/TEST-*.xml"$'\n'"${report_paths}"
-            check_name="${file##target/surefire-reports-}"$'\n'"${check_name}"
+            check_name="JUnit Report ${file##target/surefire-reports-}"$'\n'"${check_name}"
           done
           echo "report_paths<<EOF"$'\n'"${report_paths}EOF" >> $GITHUB_OUTPUT
           echo "check_name<<EOF"$'\n'"${check_name}EOF" >> $GITHUB_OUTPUT
@@ -96,6 +96,12 @@ jobs:
           check_retries: true
           detailed_summary: true
 
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # for Sonar
+          fetch-depth: 0
+
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -109,12 +115,6 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          # for Sonar
-          fetch-depth: 0
 
       - name: Merge JaCoCo and run SonarQube
         run: mvn -B jacoco:merge org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
