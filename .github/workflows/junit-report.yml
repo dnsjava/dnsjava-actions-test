@@ -13,24 +13,14 @@ permissions:
 
 jobs:
   junit-report:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        java: [ '17' ]
-        arch: [ 'x64' ]
-        include:
-          - os: windows-latest
-            java: '17'
-            arch: x86
-
     name: Process JUnit Reports
     runs-on: ubuntu-latest
     steps:
       - name: Download Test Report
         uses: dawidd6/action-download-artifact@v2
         with:
-          name: junit-test-results-${{ matrix.os }}-${{ matrix.arch }}
+          name_is_regexp: true
+          name: junit-test-results-.*
           workflow: ${{ github.event.workflow.id }}
           run_id: ${{ github.event.workflow_run.id }}
           path: 'target/surefire-reports'
@@ -39,9 +29,7 @@ jobs:
         uses: mikepenz/action-junit-report@v3
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
-          report_paths: 'target/surefire-reports/TEST-*.xml'
+          report_paths: 'target/surefire-reports/**/TEST-*.xml'
           require_tests: true
           check_retries: true
           detailed_summary: true
-          job_name: 'Java ${{ matrix.java }}/${{ matrix.arch }}/${{ matrix.os }}'
-          check_name: 'Java ${{ matrix.java }}/${{ matrix.arch }}/${{ matrix.os }}'
