@@ -97,7 +97,7 @@ jobs:
 
       - name: Merge and output
         run: |
-          mvn -B jacoco:merge jacoco:report \
+          mvn -B jacoco:merge jacoco:report
           ls -R target
 
       - name: Upload
