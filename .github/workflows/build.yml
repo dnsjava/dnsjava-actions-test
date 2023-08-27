@@ -44,6 +44,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
+        shell: bash
         run: |
           mvn verify \
             -B \
