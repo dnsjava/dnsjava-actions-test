@@ -55,7 +55,7 @@ final class TypeBitmap implements Serializable {
           if ((current & (1 << (7 - j))) == 0) {
             continue;
           }
-          int typecode = mapbase * 256 + +i * 8 + j;
+          int typecode = mapbase * 256 + i * 8 + j;
           types.add(typecode);
         }
       }
@@ -106,8 +106,7 @@ final class TypeBitmap implements Serializable {
     int[] array = new int[arraylength];
     out.writeU8(mapbase);
     out.writeU8(arraylength);
-    for (Integer integer : map) {
-      int typecode = integer;
+    for (int typecode : map) {
       array[(typecode & 0xFF) / 8] |= 1 << (7 - typecode % 8);
     }
     for (int j = 0; j < arraylength; j++) {
@@ -116,7 +115,7 @@ final class TypeBitmap implements Serializable {
   }
 
   public void toWire(DNSOutput out) {
-    if (types.size() == 0) {
+    if (types.isEmpty()) {
       return;
     }
 
@@ -127,7 +126,7 @@ final class TypeBitmap implements Serializable {
       int t = type;
       int base = t >> 8;
       if (base != mapbase) {
-        if (map.size() > 0) {
+        if (!map.isEmpty()) {
           mapToWire(out, map, mapbase);
           map.clear();
         }
