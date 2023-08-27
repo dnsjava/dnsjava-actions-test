@@ -22,7 +22,6 @@ runs:
 
     - name: Extract artifacts
       run: |
-        ls -R .
         for t in ${{ inputs.name }}*.tar
         do
           tar -xvf "${t}"
