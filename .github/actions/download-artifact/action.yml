@@ -15,8 +15,18 @@ runs:
   using: composite
   steps:
     - name: Download artifacts
+      if: github.event_name != 'workflow_run'
       uses: actions/download-artifact@v3
       with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+
+    - name: Download artifacts
+      if: github.event_name == 'workflow_run'
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: ${{ github.event.workflow_run.name }}
+        run_id: ${{ github.event.workflow_run.id }}
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
 
