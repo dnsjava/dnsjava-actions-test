@@ -12,7 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Selector;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.xbill.DNS.utils.base16;
 
 class NioTcpClientTest {
-
   private static final String SELECTOR_TIMEOUT_PROPERTY = "dnsjava.nio.selector_timeout";
 
   @ParameterizedTest
@@ -38,8 +36,10 @@ class NioTcpClientTest {
 
   @Test
   void testResponseStream() throws InterruptedException, IOException {
-    // start the selector thread early
-    try (Selector ignore = NioClient.selector()) {
+    try {
+      // start the selector thread early
+      NioClient.selector();
+
       Record qr = Record.newRecord(Name.fromConstantString("example.com."), Type.A, DClass.IN);
       Message[] q = new Message[] {Message.newQuery(qr), Message.newQuery(qr)};
       CountDownLatch cdlServerThreadStart = new CountDownLatch(1);
@@ -122,6 +122,8 @@ class NioTcpClientTest {
           fail("timed out waiting for answers");
         }
       }
+    } finally {
+      NioClient.close();
     }
   }
 
@@ -130,9 +132,10 @@ class NioTcpClientTest {
   void testTooShortResponseStream(String base16ResponseBytes)
       throws InterruptedException, IOException {
     byte[] responseBytes = base16.fromString(base16ResponseBytes);
+    try {
+      // start the selector thread early
+      NioClient.selector();
 
-    // start the selector thread early
-    try (Selector ignore = NioClient.selector()) {
       Record qr = Record.newRecord(Name.fromConstantString("example.com."), Type.A, DClass.IN);
       Message q = Message.newQuery(qr);
       CountDownLatch cdlServerThreadStart = new CountDownLatch(1);
@@ -186,11 +189,13 @@ class NioTcpClientTest {
                     fail("Got an answer but expected timeout");
                   }
                 });
-      }
 
-      if (!cdlWaitForResult.await(5, TimeUnit.SECONDS)) {
-        fail("Timeout");
+        if (!cdlWaitForResult.await(5, TimeUnit.SECONDS)) {
+          fail("Timeout");
+        }
       }
+    } finally {
+      NioClient.close();
     }
   }
 }
