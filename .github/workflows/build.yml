@@ -95,7 +95,6 @@ jobs:
         uses: ./.github/actions/download-artifact
         with:
           name: coverage
-          path: target
 
       - name: Merge and output
         run: |
@@ -123,19 +122,16 @@ jobs:
         uses: ./.github/actions/download-artifact
         with:
           name: reports
-          path: target
 
       - name: Get coverage
         uses: ./.github/actions/download-artifact
         with:
           name: merged-coverage
-          path: target/site/jacoco
 
       - name: Get classes
         uses: ./.github/actions/download-artifact
         with:
           name: classes
-          path: target
 
       - name: Display structure of downloaded files
         run: ls -R
