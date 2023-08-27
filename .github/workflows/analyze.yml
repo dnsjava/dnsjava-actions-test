@@ -12,6 +12,9 @@ permissions:
   contents: read
   checks: write
 
+env:
+  BUILD_JAVA_VERSION: '17'
+
 jobs:
   analyze:
     name: Analyze Code
