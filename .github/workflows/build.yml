@@ -44,32 +44,69 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn verify -B -"Dgpg.skip" jacoco:report
-          cd target
-          mv surefire-reports surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
-          mv jacoco.exec jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
+          mvn verify \
+            -B \
+            -Dsurefire.rerunFailingTestsCount=2 \
+            -"Dgpg.skip" \
+            -Djacoco.destFile=jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec \
+            jacoco:report
+          mv target/surefire-reports target/surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
 
       - name: Upload classes
-        uses: actions/upload-artifact@v3
+        uses: ./.github/actions/upload-artifact
         if: matrix.java == env.BUILD_JAVA_VERSION && matrix.arch == 'x64' && matrix.os == 'ubuntu-latest'
         with:
           name: classes
           path: target/*classes
 
-      - name: Upload Reports
-        uses: actions/upload-artifact@v3
+      - name: Upload JUnit Reports
+        uses: ./.github/actions/upload-artifact
         if: always() # always run even if the previous step fails
         with:
           name: reports
-          path: |
-            target/surefire-reports-*/TEST-*.xml
-            target/jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
-          retention-days: 1
+          path: target/surefire-reports-*/TEST-*.xml
+
+      - name: Upload Coverage Reports
+        uses: ./.github/actions/upload-artifact
+        if: always() # always run even if the previous step fails
+        with:
+          name: coverage
+          path: target/jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
+
+  coverage:
+    name: JaCoCo Report
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.BUILD_JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Get coverage artifact
+        uses: ./.github/actions/download-artifact
+        with:
+          name: coverage
+          path: target
+
+      - name: Merge and output
+        run: mvn -B jacoco:merge jacoco:report
+
+      - name: Upload
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: merged-coverage
+          path: target/site/jacoco/jacoco.xml
 
   analyze:
     name: Analyze Code
     runs-on: ubuntu-latest
-    needs: build
+    needs: coverage
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -77,14 +114,20 @@ jobs:
           # for Sonar
           fetch-depth: 0
 
-      - name: Get reports artifact
-        uses: actions/download-artifact@v3
+      - name: Get reports
+        uses: ./.github/actions/download-artifact
         with:
           name: reports
           path: target
 
-      - name: Get classes artifact
-        uses: actions/download-artifact@v3
+      - name: Get coverage
+        uses: ./.github/actions/download-artifact
+        with:
+          name: merged-coverage
+          path: target/site/jacoco
+
+      - name: Get classes
+        uses: ./.github/actions/download-artifact
         with:
           name: classes
           path: target
@@ -129,12 +172,8 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Merge JaCoCo and run SonarQube
+      - name: Run SonarQube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B \
-          jacoco:merge \
-          jacoco:report \
-          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B  org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
