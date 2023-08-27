@@ -202,7 +202,7 @@
                                 <fileSet>
                                     <directory>${project.build.directory}</directory>
                                     <includes>
-                                        <include>*.exec</include>
+                                        <include>jacoco-*.exec</include>
                                     </includes>
                                 </fileSet>
                             </fileSets>

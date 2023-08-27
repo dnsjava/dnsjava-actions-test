@@ -96,7 +96,9 @@ jobs:
           path: target
 
       - name: Merge and output
-        run: mvn -B jacoco:merge jacoco:report
+        run: |
+          mvn -B jacoco:merge jacoco:report \
+          ls -R target
 
       - name: Upload
         uses: ./.github/actions/upload-artifact
