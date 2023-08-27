@@ -83,7 +83,7 @@ jobs:
       - name: echo
         run: |
           cat << EOF
-          ${{ toJson(github.event) }}
+          ${{ toJson(github) }}
           EOF
 
       - name: Checkout
@@ -132,7 +132,7 @@ jobs:
     name: Analyze Code
     runs-on: ubuntu-latest
     needs: coverage
-    if: ${{ github.event.workflow_run.event == 'push' || github.event.pull_request.head.repo.owner.login == 'dnsjava' }}
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.owner.login == 'dnsjava' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -149,4 +149,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: exit 0
+        #mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar

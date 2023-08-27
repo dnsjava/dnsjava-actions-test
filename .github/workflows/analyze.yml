@@ -15,13 +15,13 @@ permissions:
 jobs:
   analyze:
     name: Analyze Code
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.fork
+    #if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.fork
     runs-on: ubuntu-latest
     steps:
       - name: echo
         run: |
           cat << EOF
-          ${{ toJson(github.event) }}
+          ${{ toJson(github) }}
           EOF
 
       - name: Checkout base
