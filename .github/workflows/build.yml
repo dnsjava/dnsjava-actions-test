@@ -48,9 +48,10 @@ jobs:
             -B \
             -Dsurefire.rerunFailingTestsCount=2 \
             -"Dgpg.skip" \
-            -Djacoco.destFile=jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec \
             jacoco:report
-          mv target/surefire-reports target/surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
+          cd target
+          mv jacoco.exec jacoco-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}.exec
+          mv surefire-reports surefire-reports-${{ matrix.java }}-${{ matrix.arch }}-${{ matrix.os }}
 
       - name: Upload classes
         uses: ./.github/actions/upload-artifact
