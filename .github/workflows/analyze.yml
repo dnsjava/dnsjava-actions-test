@@ -19,7 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo
-        run: echo "${{ toJson(github.event) }}"
+        run: |
+          cat << EOF
+          ${{ toJson(github.event) }}
+          EOF
 
       - name: Checkout base
         uses: actions/checkout@v3

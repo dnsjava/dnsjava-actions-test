@@ -1,6 +1,10 @@
 name: Prepare code analysis
 description: Prepare the working directory for SonarQube code analysis
 
+inputs:
+  cache:
+    description: Cache type
+
 runs:
   using: composite
   steps:
@@ -42,3 +46,18 @@ runs:
         require_tests: true
         check_retries: true
         detailed_summary: true
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.BUILD_JAVA_VERSION }}
+        distribution: temurin
+        cache: ${{ inputs.cache }}
+
+    - name: Cache SonarCloud packages
+      if: inputs.cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
