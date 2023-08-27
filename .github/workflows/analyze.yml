@@ -15,7 +15,8 @@ permissions:
 jobs:
   analyze:
     name: Analyze Code
-    #if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.fork
+    # Only run on forks, in-repo PRs are analyzed directly
+    if: github.event.workflow_run.head_repository.owner.login != 'dnsjava'
     runs-on: ubuntu-latest
     steps:
       - name: echo
@@ -24,17 +25,44 @@ jobs:
           ${{ toJson(github) }}
           EOF
 
+      - name: Download PR number artifact
+        id: get_pr_number
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{ github.event.workflow_run.name }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: pr_number
+
+      - name: Read Pull Request Number
+        id: pr_number
+        shell: bash
+        run: |
+          PR=$(cat pr_number.txt)
+          echo "pr_number=${PR}" >> "$GITHUB_OUTPUT"
+
+      - name: Request PR data from GitHub API
+        id: get_pr_data
+        if: steps.get_pr_number.outputs.found_artifact
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          route: GET /repos/{full_name}/pulls/{number}
+          full_name: ${{ github.event.repository.full_name }}
+          number: ${{ steps.pr_number.outputs.pr_number }}
+
       - name: Checkout base
         uses: actions/checkout@v3
         with:
-          repository: ${{ github.event.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_sha }}
+          repository: ${{ github.event.repository.full_name }}
+          ref: ${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
           path: base
 
       - name: Checkout PR
         uses: actions/checkout@v3
         with:
-          repository: ${{ github.event.workflow_run.repository.full_name }}
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           # for Sonar
           fetch-depth: 0
 
@@ -56,7 +84,7 @@ jobs:
           cp -f base/pom.xml .
           mvn -B \
           -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }} \
-          -Dsonar.pullrequest.key=${{ github.event.workflow_run.pull_requests[0].number }} \
-          -Dsonar.pullrequest.branch=${{ github.event.workflow_run.pull_requests[0].head.ref }} \
-          -Dsonar.pullrequest.base=${{ github.event.workflow_run.pull_requests[0].base.ref }} \
+          -Dsonar.pullrequest.key=${{ fromJson(steps.get_pr_data.outputs.data).number }} \
+          -Dsonar.pullrequest.branch=${{ fromJson(steps.get_pr_data.outputs.data).head.ref }} \
+          -Dsonar.pullrequest.base=${{ fromJson(steps.get_pr_data.outputs.data).base.ref }} \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
