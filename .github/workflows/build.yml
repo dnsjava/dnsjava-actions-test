@@ -96,6 +96,11 @@ jobs:
         with:
           name: coverage
 
+      - name: Get classes
+        uses: ./.github/actions/download-artifact
+        with:
+          name: classes
+
       - name: Merge and output
         run: |
           mvn -B jacoco:merge jacoco:report
