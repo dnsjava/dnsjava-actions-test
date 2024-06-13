@@ -1,9 +1,9 @@
 = dnsjava
 
-image:https://github.com/dnsjava/dnsjava/actions/workflows/build.yml/badge.svg["GitHub CI Build Status",link="https://github.com/dnsjava/dnsjava/actions/workflows/build.yml"]
-image:https://codecov.io/gh/dnsjava/dnsjava/branch/master/graph/badge.svg?token=FKmcwl1Oys["codecov",link="https://codecov.io/gh/dnsjava/dnsjava"]
-image:https://maven-badges.herokuapp.com/maven-central/dnsjava/dnsjava/badge.svg["Maven Central",link="https://search.maven.org/artifact/dnsjava/dnsjava"]
-image:https://javadoc.io/badge/dnsjava/dnsjava.svg["Javadocs",link="https://javadoc.io/doc/dnsjava/dnsjava"]
+image:https://github.com/dnsjava/dnsjava-actions-test/actions/workflows/build.yml/badge.svg["GitHub CI Build Status",link="https://github.com/dnsjava/dnsjava-actions-test/actions/workflows/build.yml"]
+image:https://codecov.io/gh/dnsjava/dnsjava-actions-test/branch/master/graph/badge.svg?token=FKmcwl1Oys["codecov",link="https://codecov.io/gh/dnsjava/dnsjava-actions-test"]
+image:https://maven-badges.herokuapp.com/maven-central/dnsjava/dnsjava-actions-test/badge.svg["Maven Central",link="https://search.maven.org/artifact/dnsjava/dnsjava-actions-test"]
+image:https://javadoc.io/badge/dnsjava/dnsjava-actions-test.svg["Javadocs",link="https://javadoc.io/doc/dnsjava/dnsjava-actions-test"]
 
 == Overview
 
